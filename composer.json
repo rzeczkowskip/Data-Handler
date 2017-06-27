@@ -1,0 +1,25 @@
+{
+    "name": "rzeka/data-handler",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Piotr Rzeczkowski",
+            "email": "piotr@rzeka.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Rzeka\\DataHandler\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "require": {
+        "php": ">=7.0",
+        "symfony/validator": "^3.3",
+        "symfony/options-resolver": "^3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    }
+}
