@@ -6,6 +6,8 @@ use Rzeka\DataHandler\DataHydratableInterface;
 use Rzeka\DataHandler\DataHandler;
 use Rzeka\DataHandler\DataHandlerResult;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -46,6 +48,44 @@ class DataHandlerTest extends TestCase
         $result = $handler->handle($requestData, $data);
 
         static::assertInstanceOf(DataHandlerResult::class, $result);
+    }
+
+    public function testHandleWithAdditionalConstraints()
+    {
+        $data = [];
+
+        $constraints = [
+            $this->createMock(Constraint::class)
+        ];
+
+        $violationList1 = $this->createMock(ConstraintViolationListInterface::class);
+        $violationList2 = $this->createMock(ConstraintViolationListInterface::class);
+
+        $this->validator
+            ->expects(static::exactly(2))
+            ->method('validate')
+            ->withConsecutive(
+                [$data, null, null],
+                [$data, $constraints, null]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $violationList1,
+                $violationList2
+            );
+
+        $violationList1
+            ->expects(static::once())
+            ->method('addAll')
+            ->with($violationList2);
+
+        $handler = new DataHandler($this->validator);
+        $handler->handle(
+            [],
+            $data,
+            [
+                'constraints_extra' => $constraints
+            ]
+        );
     }
 
     public function testHandleWithValidationGroups()

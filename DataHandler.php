@@ -40,6 +40,11 @@ class DataHandler
         $options = $this->resolveOptions($options);
         $violationList = $this->validator->validate($data, $options['constraints'], $options['validation_groups']);
 
+        if ($options['constraints_extra']) {
+            $extraViolations = $this->validator->validate($data, $options['constraints_extra'], $options['validation_groups']);
+            $violationList->addAll($extraViolations);
+        }
+
         return new DataHandlerResult($data, $requestData, $violationList);
     }
 
@@ -55,7 +60,8 @@ class DataHandler
 
             $this->optionsResolver->setDefaults([
                 'validation_groups' => null,
-                'constraints' => null
+                'constraints' => null,
+                'constraints_extra' => null
             ]);
         }
 
